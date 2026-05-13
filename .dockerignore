@@ -1,0 +1,12 @@
+.git
+.env
+.env.*
+!.env.example
+node_modules
+.next
+dist
+coverage
+*.log
+*.tsbuildinfo
+.DS_Store
+.local-pgdata

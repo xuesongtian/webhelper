@@ -1,0 +1,9 @@
+akeshen.com, www.akeshen.com {
+  encode gzip
+
+  handle_path /api/* {
+    reverse_proxy api:4000
+  }
+
+  reverse_proxy web:3000
+}

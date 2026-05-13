@@ -1,0 +1,20 @@
+FROM node:20-alpine
+
+WORKDIR /app
+ENV NODE_ENV=production
+ENV NEXT_PUBLIC_API_URL=/api
+
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
+COPY prisma ./prisma
+COPY packages ./packages
+COPY apps/api ./apps/api
+COPY apps/web ./apps/web
+
+RUN pnpm install --frozen-lockfile
+RUN pnpm db:generate
+RUN pnpm --filter web build
+
+EXPOSE 3000
+CMD ["pnpm", "--filter", "web", "start"]

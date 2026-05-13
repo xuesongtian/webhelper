@@ -1,0 +1,18 @@
+FROM node:20-alpine
+
+WORKDIR /app
+ENV NODE_ENV=production
+
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
+COPY prisma ./prisma
+COPY packages ./packages
+COPY apps/api ./apps/api
+
+RUN pnpm install --frozen-lockfile
+RUN pnpm db:generate
+RUN pnpm --filter api build
+
+EXPOSE 4000
+CMD ["sh", "-c", "pnpm db:push && pnpm --filter api start"]

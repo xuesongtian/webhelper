@@ -164,6 +164,40 @@ pnpm --filter api typecheck
 pnpm --filter web typecheck
 ```
 
+## 生产部署到服务器
+
+仓库内置了生产部署文件：
+
+- `Dockerfile.api`
+- `Dockerfile.web`
+- `deploy/docker-compose.prod.yml`
+- `deploy/Caddyfile`
+
+在 Ubuntu 服务器上执行：
+
+```bash
+git clone https://github.com/xuesongtian/webhelper.git
+cd webhelper/deploy
+cp ../../.env.example .env
+```
+
+编辑 `deploy/.env`：
+
+```bash
+POSTGRES_PASSWORD="replace-with-a-strong-password"
+JWT_SECRET="replace-with-a-long-random-secret"
+ENCRYPTION_KEY="replace-with-a-32-byte-or-longer-random-secret"
+PUBLIC_APP_URL="https://akeshen.com"
+```
+
+启动：
+
+```bash
+docker compose --env-file .env -f docker-compose.prod.yml up -d --build
+```
+
+Caddy 会自动为 `akeshen.com` 和 `www.akeshen.com` 申请 HTTPS 证书，API 会挂在同域名的 `/api` 路径下。
+
 ## 当前 MVP 边界
 
 - 支持 Ubuntu 服务器。

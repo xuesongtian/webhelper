@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "start": "next start --port 3000"
   },
   "dependencies": {
     "clsx": "^2.1.1",
