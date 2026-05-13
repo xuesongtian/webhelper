@@ -21,6 +21,14 @@ export function ProjectCard({ project, onChanged }: ProjectCardProps) {
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState("");
   const needsPassword = project.server?.authType === "PASSWORD_ONCE" && !project.server.hasStoredPrivateKey;
+  const cardTone =
+    project.status === "RUNNING"
+      ? "from-[#f0f9eb] via-white to-[#ecf5ff]"
+      : project.status === "FAILED"
+        ? "from-[#fef0f0] via-white to-[#fdf6ec]"
+        : project.status === "BUILDING"
+          ? "from-[#ecf5ff] via-white to-[#f4f0ff]"
+          : "from-[#f8f8ff] via-white to-[#fdf6ec]";
 
   async function runAction(action: "deploy" | "redeploy" | "stop") {
     if (!requireSignedIn(router, `/projects/${project.id}`)) {
@@ -65,22 +73,22 @@ export function ProjectCard({ project, onChanged }: ProjectCardProps) {
   }
 
   return (
-    <article className="ios-card ios-touch p-5">
+    <article className={`element-card ios-card ios-touch bg-gradient-to-br ${cardTone} p-5`}>
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <Link href={`/projects/${project.id}`} className="truncate text-xl font-black tracking-[0] text-slate-950 hover:text-[#0a84ff]">
+            <Link href={`/projects/${project.id}`} className="truncate text-xl font-black tracking-[0] text-slate-950 hover:text-[#409eff]">
               {project.name}
             </Link>
             <StatusBadge status={project.status} />
           </div>
           <div className="mt-4 grid gap-2 text-sm text-slate-600 sm:grid-cols-2 2xl:grid-cols-3">
-            <Info label="Git" value={project.gitRepo} />
-            <Info label="分支" value={project.branch} />
-            <Info label="域名" value={project.domain} />
-            <Info label="服务器" value={project.server?.host ?? "未配置"} />
-            <Info label="最近部署" value={project.lastDeployAt ? new Date(project.lastDeployAt).toLocaleString() : "暂无"} />
-            <Info label="Commit" value={project.currentCommitHash ?? "暂无"} />
+            <Info label="Git" value={project.gitRepo} tone="blue" />
+            <Info label="分支" value={project.branch} tone="purple" />
+            <Info label="域名" value={project.domain} tone="green" />
+            <Info label="服务器" value={project.server?.host ?? "未配置"} tone="orange" />
+            <Info label="最近部署" value={project.lastDeployAt ? new Date(project.lastDeployAt).toLocaleString() : "暂无"} tone="cyan" />
+            <Info label="Commit" value={project.currentCommitHash ?? "暂无"} tone="red" />
           </div>
         </div>
 
@@ -133,10 +141,19 @@ export function ProjectCard({ project, onChanged }: ProjectCardProps) {
   );
 }
 
-function Info({ label, value }: { label: string; value: string }) {
+function Info({ label, value, tone }: { label: string; value: string; tone: "blue" | "green" | "orange" | "red" | "purple" | "cyan" }) {
+  const toneClass = {
+    blue: "border-[#d9ecff] bg-[#ecf5ff]/72 text-[#409eff]",
+    green: "border-[#e1f3d8] bg-[#f0f9eb]/72 text-[#67c23a]",
+    orange: "border-[#faecd8] bg-[#fdf6ec]/72 text-[#e6a23c]",
+    red: "border-[#fde2e2] bg-[#fef0f0]/72 text-[#f56c6c]",
+    purple: "border-[#ebe0ff] bg-[#f4f0ff]/72 text-[#9b6cff]",
+    cyan: "border-[#d9f7f5] bg-[#e6fffb]/72 text-[#13c2c2]",
+  }[tone];
+
   return (
-    <span className="min-w-0 rounded-lg bg-white/54 px-3 py-2">
-      <span className="block text-xs font-semibold text-slate-400">{label}</span>
+    <span className={`min-w-0 rounded-lg border px-3 py-2 ${toneClass}`}>
+      <span className="block text-xs font-semibold opacity-80">{label}</span>
       <span className="mt-1 block truncate font-medium text-slate-700" title={value}>
         {value}
       </span>

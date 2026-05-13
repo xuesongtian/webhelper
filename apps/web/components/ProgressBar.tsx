@@ -15,10 +15,10 @@ export function ProgressBar({ status }: { status: ProjectStatus }) {
       <div
         className={clsx(
           "h-full rounded-full transition-all duration-500",
-          status === "FAILED" && "bg-[#ff3b30]",
-          status === "RUNNING" && "bg-[#34c759]",
-          status === "BUILDING" && "bg-[#0a84ff]",
-          status === "STOPPED" && "bg-[#ff9f0a]",
+          status === "FAILED" && "bg-[#f56c6c]",
+          status === "RUNNING" && "bg-gradient-to-r from-[#67c23a] to-[#409eff]",
+          status === "BUILDING" && "bg-gradient-to-r from-[#409eff] to-[#9b6cff]",
+          status === "STOPPED" && "bg-[#e6a23c]",
           status === "UNDEPLOYED" && "bg-slate-300",
         )}
         style={{ width: `${progressByStatus[status]}%` }}

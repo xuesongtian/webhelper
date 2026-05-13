@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Globe2, Plus, RefreshCw, Rocket, ServerCog } from "lucide-react";
+import { Activity, Globe2, Plus, RefreshCw, Rocket, ServerCog, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/Button";
@@ -51,15 +51,21 @@ export default function ProjectsPage() {
 
   return (
     <div className="space-y-5">
-      <header className="liquid-panel-strong rounded-lg p-5">
+      <header className="element-hero liquid-panel-strong rounded-lg p-5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/70 px-3 py-1 text-xs font-semibold text-[#0a84ff]">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#d9ecff] bg-[#ecf5ff]/90 px-3 py-1 text-xs font-semibold text-[#409eff]">
               <Activity size={14} />
               {guestMode ? "访客预览模式" : "实时工作区"}
             </div>
             <h1 className="mt-3 text-3xl font-black tracking-[0] text-slate-950">项目面板</h1>
-            <p className="mt-2 text-sm leading-6 text-slate-500">一进来就能查看项目、状态、日志和服务器概况；真正建站时再登录。</p>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Git、域名、服务器和部署任务都在这里收口，关键操作再完成账号密码确认。</p>
+            <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
+              <span className="rounded-full border border-[#d9ecff] bg-[#ecf5ff] px-3 py-1 text-[#409eff]">GitHub</span>
+              <span className="rounded-full border border-[#e1f3d8] bg-[#f0f9eb] px-3 py-1 text-[#67c23a]">Docker</span>
+              <span className="rounded-full border border-[#faecd8] bg-[#fdf6ec] px-3 py-1 text-[#e6a23c]">HTTPS</span>
+              <span className="rounded-full border border-[#ebe0ff] bg-[#f4f0ff] px-3 py-1 text-[#9b6cff]">Webhook</span>
+            </div>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button type="button" variant="secondary" icon={<RefreshCw size={17} />} onClick={() => void loadProjects()}>
@@ -82,8 +88,9 @@ export default function ProjectsPage() {
       </section>
 
       {guestMode ? (
-        <div className="rounded-lg border border-blue-100 bg-blue-50/80 px-4 py-3 text-sm text-blue-800 backdrop-blur-xl">
-          当前展示的是安全演示面板。你可以浏览详情、日志、状态和表单；点击部署、保存、删除时会进入登录页。
+        <div className="flex items-center gap-3 rounded-lg border border-[#d9ecff] bg-[#ecf5ff]/88 px-4 py-3 text-sm text-[#337ecc] shadow-[0_12px_34px_rgba(64,158,255,0.08)] backdrop-blur-xl">
+          <Sparkles size={17} />
+          当前展示安全演示项目；部署、保存和删除会进入账号密码登录页。
         </div>
       ) : null}
 
@@ -114,15 +121,21 @@ export default function ProjectsPage() {
 
 function MetricCard({ icon, label, value, tone }: { icon: React.ReactNode; label: string; value: string; tone: "blue" | "green" | "orange" | "red" }) {
   const toneClass = {
-    blue: "text-[#0a84ff] bg-blue-50",
-    green: "text-[#34c759] bg-emerald-50",
-    orange: "text-[#ff9f0a] bg-orange-50",
-    red: "text-[#ff3b30] bg-red-50",
+    blue: "text-[#409eff] bg-[#ecf5ff] border-[#d9ecff]",
+    green: "text-[#67c23a] bg-[#f0f9eb] border-[#e1f3d8]",
+    orange: "text-[#e6a23c] bg-[#fdf6ec] border-[#faecd8]",
+    red: "text-[#f56c6c] bg-[#fef0f0] border-[#fde2e2]",
+  }[tone];
+  const lineClass = {
+    blue: "before:bg-[#409eff]",
+    green: "before:bg-[#67c23a]",
+    orange: "before:bg-[#e6a23c]",
+    red: "before:bg-[#f56c6c]",
   }[tone];
 
   return (
-    <div className="ios-card p-4">
-      <div className={`grid h-9 w-9 place-items-center rounded-lg ${toneClass}`}>{icon}</div>
+    <div className={`ios-card relative overflow-hidden p-4 before:absolute before:inset-x-0 before:top-0 before:h-1 ${lineClass}`}>
+      <div className={`grid h-9 w-9 place-items-center rounded-lg border ${toneClass}`}>{icon}</div>
       <div className="mt-4 text-3xl font-black tracking-[0] text-slate-950">{value}</div>
       <div className="mt-1 text-sm text-slate-500">{label}</div>
     </div>

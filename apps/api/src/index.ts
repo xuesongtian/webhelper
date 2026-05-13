@@ -46,6 +46,12 @@ const loginSchema = z.object({
   password: z.string().min(6),
 });
 
+const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  name: z.string().trim().min(1).max(60).optional(),
+});
+
 const envVarSchema = z.object({
   key: z.string().regex(/^[A-Za-z_][A-Za-z0-9_]*$/, "Environment variable keys must be shell-safe."),
   value: z.string(),
@@ -104,6 +110,33 @@ app.post(
     }
 
     res.json({
+      token: signAuthToken({ id: user.id, email: user.email }),
+      user: { id: user.id, email: user.email, name: user.name },
+    });
+  }),
+);
+
+app.post(
+  "/auth/register",
+  asyncHandler(async (req, res) => {
+    const body = registerSchema.parse(req.body);
+    const normalizedEmail = body.email.trim().toLowerCase();
+
+    const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
+    if (existing) {
+      res.status(409).json({ error: "Account already exists. Please sign in instead." });
+      return;
+    }
+
+    const user = await prisma.user.create({
+      data: {
+        email: normalizedEmail,
+        name: body.name ?? normalizedEmail.split("@")[0],
+        passwordHash: await bcrypt.hash(body.password, 10),
+      },
+    });
+
+    res.status(201).json({
       token: signAuthToken({ id: user.id, email: user.email }),
       user: { id: user.id, email: user.email, name: user.name },
     });

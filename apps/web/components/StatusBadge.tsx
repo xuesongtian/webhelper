@@ -14,21 +14,21 @@ export function StatusBadge({ status }: { status: ProjectStatus }) {
     <span
       className={clsx(
         "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold backdrop-blur-xl",
-        status === "UNDEPLOYED" && "border-slate-200/80 bg-white/62 text-slate-600",
-        status === "BUILDING" && "border-blue-200/80 bg-blue-50/70 text-blue-700",
-        status === "RUNNING" && "border-emerald-200/80 bg-emerald-50/70 text-emerald-700",
-        status === "FAILED" && "border-red-200/80 bg-red-50/70 text-red-700",
-        status === "STOPPED" && "border-amber-200/80 bg-amber-50/70 text-amber-700",
+        status === "UNDEPLOYED" && "border-[#dcdfe6] bg-white/70 text-[#909399]",
+        status === "BUILDING" && "border-[#d9ecff] bg-[#ecf5ff]/82 text-[#409eff]",
+        status === "RUNNING" && "border-[#e1f3d8] bg-[#f0f9eb]/82 text-[#67c23a]",
+        status === "FAILED" && "border-[#fde2e2] bg-[#fef0f0]/82 text-[#f56c6c]",
+        status === "STOPPED" && "border-[#faecd8] bg-[#fdf6ec]/82 text-[#e6a23c]",
       )}
     >
       <span
         className={clsx(
           "h-1.5 w-1.5 rounded-full",
           status === "UNDEPLOYED" && "bg-slate-400",
-          status === "BUILDING" && "bg-blue-500",
-          status === "RUNNING" && "status-pulse bg-emerald-500",
-          status === "FAILED" && "bg-red-500",
-          status === "STOPPED" && "bg-amber-500",
+          status === "BUILDING" && "bg-[#409eff]",
+          status === "RUNNING" && "status-pulse bg-[#67c23a]",
+          status === "FAILED" && "bg-[#f56c6c]",
+          status === "STOPPED" && "bg-[#e6a23c]",
         )}
       />
       {statusText[status]}

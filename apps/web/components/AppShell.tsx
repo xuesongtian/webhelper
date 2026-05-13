@@ -38,7 +38,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="app-bg">
       <aside className="fixed inset-y-4 left-4 z-20 hidden w-72 rounded-lg liquid-panel px-4 py-5 lg:block">
         <Link href="/projects" className="flex items-center gap-3 px-2">
-          <span className="grid h-10 w-10 place-items-center rounded-lg bg-white text-[#0a84ff] shadow-[0_14px_32px_rgba(10,132,255,0.16)]">
+          <span className="grid h-10 w-10 place-items-center rounded-lg bg-[#ecf5ff] text-[#409eff] shadow-[0_14px_32px_rgba(64,158,255,0.16)]">
             <Globe2 size={20} />
           </span>
           <span>
@@ -49,7 +49,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <div className="mt-5 rounded-lg border border-white/70 bg-white/60 p-3 text-xs text-slate-600 shadow-sm">
           <div className="flex items-center gap-2 font-semibold text-slate-950">
-            <Sparkles size={15} className="text-[#0a84ff]" />
+            <Sparkles size={15} className="text-[#409eff]" />
             {signedIn ? "已登录工作区" : "访客可预览"}
           </div>
           <p className="mt-1 leading-5">可以先浏览面板、日志和状态；部署、保存、删除时再登录。</p>
@@ -64,7 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={`ios-touch flex h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium ${
-                  active ? "bg-slate-950 text-white shadow-[0_12px_28px_rgba(15,23,42,0.16)]" : "text-slate-600 hover:bg-white/72 hover:text-slate-950"
+                  active ? "bg-[#409eff] text-white shadow-[0_12px_28px_rgba(64,158,255,0.22)]" : "text-slate-600 hover:bg-white/72 hover:text-slate-950"
                 }`}
               >
                 <Icon size={18} />
@@ -99,7 +99,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-10 border-b border-white/70 bg-white/70 px-4 py-3 backdrop-blur-2xl lg:hidden">
         <div className="flex items-center justify-between gap-3">
           <Link href="/projects" className="flex items-center gap-2 font-bold text-slate-950">
-            <span className="grid h-9 w-9 place-items-center rounded-lg bg-white text-[#0a84ff] shadow-sm">
+            <span className="grid h-9 w-9 place-items-center rounded-lg bg-[#ecf5ff] text-[#409eff] shadow-sm">
               <Globe2 size={18} />
             </span>
             建站助手
@@ -113,7 +113,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             const Icon = item.icon;
             const active = pathname === item.href;
             return (
-              <Link key={item.href} href={item.href} className={`inline-flex h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-semibold ${active ? "bg-slate-950 text-white" : "bg-white/62 text-slate-600"}`}>
+              <Link key={item.href} href={item.href} className={`inline-flex h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-semibold ${active ? "bg-[#409eff] text-white" : "bg-white/62 text-slate-600"}`}>
                 <Icon size={16} />
                 {item.label}
               </Link>

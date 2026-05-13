@@ -9,10 +9,12 @@
   --app-line: rgba(17, 24, 39, 0.1);
   --app-glass: rgba(255, 255, 255, 0.72);
   --app-glass-strong: rgba(255, 255, 255, 0.88);
-  --app-blue: #0a84ff;
-  --app-green: #34c759;
-  --app-orange: #ff9f0a;
-  --app-red: #ff3b30;
+  --app-blue: #409eff;
+  --app-green: #67c23a;
+  --app-orange: #e6a23c;
+  --app-red: #f56c6c;
+  --app-purple: #9b6cff;
+  --app-cyan: #36cfc9;
 }
 
 * {
@@ -23,9 +25,10 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    linear-gradient(135deg, rgba(10, 132, 255, 0.1), transparent 28%),
-    linear-gradient(225deg, rgba(52, 199, 89, 0.1), transparent 28%),
-    linear-gradient(180deg, #fbfcff 0%, #f4f7fb 44%, #eef4ff 100%);
+    linear-gradient(135deg, rgba(64, 158, 255, 0.16), transparent 28%),
+    linear-gradient(225deg, rgba(103, 194, 58, 0.14), transparent 30%),
+    linear-gradient(315deg, rgba(230, 162, 60, 0.1), transparent 34%),
+    linear-gradient(180deg, #fbfcff 0%, #f4f8ff 44%, #eef7ff 100%);
   color: var(--app-ink);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", sans-serif;
 }
@@ -38,11 +41,11 @@ select {
 }
 
 ::selection {
-  background: rgba(10, 132, 255, 0.18);
+  background: rgba(64, 158, 255, 0.2);
 }
 
 .log-scrollbar {
-  scrollbar-color: rgba(10, 132, 255, 0.5) transparent;
+  scrollbar-color: rgba(64, 158, 255, 0.55) transparent;
 }
 
 .login-stage {
@@ -50,8 +53,9 @@ select {
   background:
     linear-gradient(rgba(255, 255, 255, 0.62) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.62) 1px, transparent 1px),
-    linear-gradient(135deg, rgba(10, 132, 255, 0.16), transparent 30%),
-    linear-gradient(225deg, rgba(255, 149, 0, 0.12), transparent 34%),
+    linear-gradient(135deg, rgba(64, 158, 255, 0.2), transparent 30%),
+    linear-gradient(225deg, rgba(103, 194, 58, 0.16), transparent 33%),
+    linear-gradient(315deg, rgba(230, 162, 60, 0.12), transparent 38%),
     linear-gradient(180deg, #fbfcff 0%, #f3f7ff 100%);
   background-size: 44px 44px, 44px 44px, 100% 100%;
 }
@@ -63,7 +67,7 @@ select {
   content: "";
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.72), transparent 28%),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.72), transparent 50%, rgba(10, 132, 255, 0.08));
+    linear-gradient(90deg, rgba(255, 255, 255, 0.72), transparent 50%, rgba(64, 158, 255, 0.1));
   mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.55) 56%, transparent 100%);
 }
 
@@ -80,7 +84,7 @@ select {
   inset: 0;
   width: 58%;
   content: "";
-  background: linear-gradient(90deg, #0a84ff, #34c759, #ff9f0a);
+  background: linear-gradient(90deg, #409eff, #67c23a, #e6a23c, #9b6cff);
   animation: deploy-meter 2.8s ease-in-out infinite;
 }
 
@@ -91,25 +95,27 @@ select {
 .app-bg {
   min-height: 100vh;
   background:
-    linear-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.7) 1px, transparent 1px),
-    linear-gradient(135deg, rgba(10, 132, 255, 0.1), transparent 30%),
-    linear-gradient(225deg, rgba(52, 199, 89, 0.09), transparent 34%),
-    linear-gradient(180deg, #fbfcff 0%, #f3f7ff 100%);
+    linear-gradient(rgba(255, 255, 255, 0.74) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.74) 1px, transparent 1px),
+    radial-gradient(circle at 18% 8%, rgba(64, 158, 255, 0.22), transparent 28%),
+    radial-gradient(circle at 84% 14%, rgba(103, 194, 58, 0.18), transparent 28%),
+    radial-gradient(circle at 68% 84%, rgba(230, 162, 60, 0.15), transparent 30%),
+    radial-gradient(circle at 8% 76%, rgba(155, 108, 255, 0.12), transparent 26%),
+    linear-gradient(180deg, #fbfcff 0%, #f5f9ff 44%, #edf7ff 100%);
   background-size: 40px 40px, 40px 40px, 100% 100%;
 }
 
 .liquid-panel {
   border: 1px solid var(--app-line);
   background: var(--app-glass);
-  box-shadow: 0 20px 70px rgba(31, 41, 55, 0.08);
+  box-shadow: 0 20px 70px rgba(64, 158, 255, 0.1);
   backdrop-filter: blur(22px) saturate(1.35);
 }
 
 .liquid-panel-strong {
   border: 1px solid rgba(255, 255, 255, 0.78);
   background: var(--app-glass-strong);
-  box-shadow: 0 18px 56px rgba(31, 41, 55, 0.08);
+  box-shadow: 0 18px 56px rgba(64, 158, 255, 0.1);
   backdrop-filter: blur(26px) saturate(1.45);
 }
 
@@ -117,8 +123,47 @@ select {
   border-radius: 8px;
   border: 1px solid var(--app-line);
   background: rgba(255, 255, 255, 0.76);
-  box-shadow: 0 16px 44px rgba(31, 41, 55, 0.06);
+  box-shadow: 0 16px 44px rgba(64, 158, 255, 0.08);
   backdrop-filter: blur(18px) saturate(1.25);
+}
+
+.element-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.element-card::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  content: "";
+  background: linear-gradient(180deg, #409eff, #67c23a, #e6a23c);
+}
+
+.element-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.element-hero::after {
+  position: absolute;
+  right: 18px;
+  bottom: -46px;
+  width: 260px;
+  height: 260px;
+  pointer-events: none;
+  content: "";
+  background:
+    radial-gradient(circle at 30% 35%, rgba(64, 158, 255, 0.28), transparent 32%),
+    radial-gradient(circle at 70% 30%, rgba(103, 194, 58, 0.22), transparent 34%),
+    radial-gradient(circle at 50% 72%, rgba(230, 162, 60, 0.2), transparent 34%);
+  filter: blur(2px);
+  opacity: 0.9;
+}
+
+.element-hero > * {
+  position: relative;
+  z-index: 1;
 }
 
 .ios-input {
@@ -134,9 +179,9 @@ select {
 }
 
 .ios-input:focus {
-  border-color: rgba(10, 132, 255, 0.58);
+  border-color: rgba(64, 158, 255, 0.58);
   background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.12);
+  box-shadow: 0 0 0 4px rgba(64, 158, 255, 0.13);
 }
 
 .ios-textarea {
@@ -158,7 +203,7 @@ select {
 }
 
 .status-pulse {
-  box-shadow: 0 0 0 5px rgba(52, 199, 89, 0.12);
+  box-shadow: 0 0 0 5px rgba(103, 194, 58, 0.14);
 }
 
 .login-log-line:nth-child(2) {
