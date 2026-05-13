@@ -1,7 +1,10 @@
-FROM node:20-alpine
+FROM node:20-bookworm-slim
 
 WORKDIR /app
-ENV NODE_ENV=production
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ca-certificates openssl python3 make g++ \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN corepack enable
 
@@ -14,5 +17,6 @@ RUN pnpm install --frozen-lockfile
 RUN pnpm db:generate
 RUN pnpm --filter api build
 
+ENV NODE_ENV=production
 EXPOSE 4000
 CMD ["sh", "-c", "pnpm db:push && pnpm --filter api start"]
