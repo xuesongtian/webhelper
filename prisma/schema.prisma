@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProjectStatus {
+  UNDEPLOYED
+  BUILDING
+  RUNNING
+  FAILED
+  STOPPED
+}
+
+enum DeploymentStatus {
+  QUEUED
+  BUILDING
+  RUNNING
+  FAILED
+  STOPPED
+  SUCCESS
+}
+
+enum ServerStatus {
+  UNKNOWN
+  CONNECTING
+  CONNECTED
+  FAILED
+}
+
+enum SshAuthType {
+  PRIVATE_KEY
+  PASSWORD_ONCE
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  projects     Project[]
+
+  @@map("users")
+}
+
+model Project {
+  id                String          @id @default(cuid())
+  userId            String
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name              String
+  gitRepo           String
+  branch            String          @default("main")
+  domain            String
+  status            ProjectStatus   @default(UNDEPLOYED)
+  currentCommitHash String?
+  lastDeployAt      DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  server            Server?
+  deployments       Deployment[]
+  logs              DeploymentLog[]
+  envVars           EnvVar[]
+  githubWebhook     GithubWebhook?
+
+  @@index([userId])
+  @@map("projects")
+}
+
+model Server {
+  id                     String       @id @default(cuid())
+  projectId              String       @unique
+  project                Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  host                   String
+  username               String
+  sshPort                Int          @default(22)
+  authType               SshAuthType  @default(PASSWORD_ONCE)
+  encryptedPrivateKey    String?
+  encryptedKeyPassphrase String?
+  status                 ServerStatus @default(UNKNOWN)
+  lastCheckedAt          DateTime?
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+
+  @@map("servers")
+}
+
+model Deployment {
+  id          String           @id @default(cuid())
+  projectId   String
+  project     Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  status      DeploymentStatus @default(QUEUED)
+  trigger     String
+  commitHash  String?
+  startedAt   DateTime         @default(now())
+  finishedAt  DateTime?
+  logs        DeploymentLog[]
+
+  @@index([projectId, startedAt])
+  @@map("deployments")
+}
+
+model DeploymentLog {
+  id           String      @id @default(cuid())
+  projectId    String
+  project      Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  deploymentId String?
+  deployment   Deployment? @relation(fields: [deploymentId], references: [id], onDelete: SetNull)
+  level        String      @default("info")
+  message      String
+  createdAt    DateTime    @default(now())
+
+  @@index([projectId, createdAt])
+  @@map("deployment_logs")
+}
+
+model EnvVar {
+  id             String   @id @default(cuid())
+  projectId      String
+  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  key            String
+  encryptedValue String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([projectId, key])
+  @@map("env_vars")
+}
+
+model GithubWebhook {
+  id              String    @id @default(cuid())
+  projectId       String    @unique
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  encryptedSecret String
+  active          Boolean   @default(true)
+  lastDeliveryAt  DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("github_webhooks")
+}
