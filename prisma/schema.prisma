@@ -143,3 +143,13 @@ model GithubWebhook {
 
   @@map("github_webhooks")
 }
+
+model GuestMessage {
+  id               String   @id @default(cuid())
+  content          String
+  encryptedContact String?
+  createdAt        DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("guest_messages")
+}

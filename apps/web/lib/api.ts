@@ -55,6 +55,13 @@ export type DeploymentLog = {
   createdAt: string;
 };
 
+export type GuestMessage = {
+  id: string;
+  content: string;
+  hasContact: boolean;
+  createdAt: string;
+};
+
 export type ProjectFormPayload = {
   name: string;
   gitRepo: string;

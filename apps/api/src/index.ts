@@ -10,6 +10,7 @@ import {
   type Deployment,
   type EnvVar,
   type GithubWebhook,
+  type GuestMessage,
   type Project,
   type Server,
 } from "@prisma/client";
@@ -83,6 +84,15 @@ const deployRequestSchema = z.object({
   sshKeyPassphrase: z.string().optional(),
 });
 
+const messageListQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(40).default(20),
+});
+
+const messageCreateSchema = z.object({
+  content: z.string().trim().min(2).max(300),
+  contact: z.string().trim().max(120).default(""),
+});
+
 app.get("/health", (_req, res) => {
   res.json({ ok: true, service: "jianzhan-assistant-api" });
 });
@@ -140,6 +150,35 @@ app.post(
       token: signAuthToken({ id: user.id, email: user.email }),
       user: { id: user.id, email: user.email, name: user.name },
     });
+  }),
+);
+
+app.get(
+  "/messages",
+  asyncHandler(async (req, res) => {
+    const query = messageListQuerySchema.parse(req.query);
+    const messages = await prisma.guestMessage.findMany({
+      orderBy: { createdAt: "desc" },
+      take: query.limit,
+    });
+
+    res.json({ messages: messages.map(toPublicMessage) });
+  }),
+);
+
+app.post(
+  "/messages",
+  asyncHandler(async (req, res) => {
+    const body = messageCreateSchema.parse(req.body);
+    const contact = body.contact.trim();
+    const message = await prisma.guestMessage.create({
+      data: {
+        content: body.content,
+        encryptedContact: contact ? encryptSecret(contact) : undefined,
+      },
+    });
+
+    res.status(201).json({ message: toPublicMessage(message) });
   }),
 );
 
@@ -478,6 +517,15 @@ function toPublicProject(project: ProjectWithRelations) {
           endpoint: `/webhooks/github/${project.id}`,
         }
       : null,
+  };
+}
+
+function toPublicMessage(message: GuestMessage) {
+  return {
+    id: message.id,
+    content: redactSecrets(message.content),
+    hasContact: Boolean(message.encryptedContact),
+    createdAt: message.createdAt,
   };
 }
 

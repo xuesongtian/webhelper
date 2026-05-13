@@ -4,6 +4,7 @@ import { Activity, Globe2, Plus, RefreshCw, Rocket, ServerCog, Sparkles } from "
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/Button";
+import { MessageBox } from "@/components/MessageBox";
 import { ProjectCard } from "@/components/ProjectCard";
 import { apiFetch, getToken, type Project } from "@/lib/api";
 import { demoProjects } from "@/lib/demo";
@@ -86,6 +87,8 @@ export default function ProjectsPage() {
         <MetricCard icon={<ServerCog size={18} />} label="服务器" value={String(serverCount)} tone="orange" />
         <MetricCard icon={<Activity size={18} />} label="异常" value={String(failedCount)} tone="red" />
       </section>
+
+      <MessageBox />
 
       {guestMode ? (
         <div className="flex items-center gap-3 rounded-lg border border-[#d9ecff] bg-[#ecf5ff]/88 px-4 py-3 text-sm text-[#337ecc] shadow-[0_12px_34px_rgba(64,158,255,0.08)] backdrop-blur-xl">
