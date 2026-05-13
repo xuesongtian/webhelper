@@ -4,7 +4,8 @@ import { Activity, CheckCircle2, RefreshCw, ServerCog, XCircle } from "lucide-re
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/Button";
 import { StatusBadge } from "@/components/StatusBadge";
-import { apiFetch, type Project } from "@/lib/api";
+import { apiFetch, getToken, type Project } from "@/lib/api";
+import { demoProject } from "@/lib/demo";
 
 type StatusResponse = {
   status: {
@@ -25,6 +26,20 @@ export default function ServerStatusPage({ params }: { params: { id: string } })
 
   const load = useCallback(async () => {
     setError("");
+    if (!getToken()) {
+      setProject(demoProject);
+      setStatus({
+        projectId: demoProject.id,
+        projectStatus: demoProject.status,
+        serverStatus: demoProject.server?.status ?? "UNKNOWN",
+        domain: demoProject.domain,
+        visitUrl: demoProject.visitUrl,
+        currentCommitHash: demoProject.currentCommitHash,
+        lastDeployAt: demoProject.lastDeployAt,
+      });
+      return;
+    }
+
     try {
       const [projectData, statusData] = await Promise.all([
         apiFetch<{ project: Project }>(`/projects/${params.id}`),
@@ -44,18 +59,20 @@ export default function ServerStatusPage({ params }: { params: { id: string } })
   const connected = status?.serverStatus === "CONNECTED";
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-5">
+      <header className="liquid-panel-strong rounded-lg p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-ink">服务器连接状态</h1>
-          <p className="mt-1 text-sm text-slate-500">{project?.server?.username}@{project?.server?.host}</p>
+          <h1 className="text-3xl font-black tracking-[0] text-slate-950">服务器连接状态</h1>
+          <p className="mt-2 text-sm text-slate-500">{project?.server?.username}@{project?.server?.host}</p>
         </div>
         <Button type="button" variant="secondary" icon={<RefreshCw size={17} />} onClick={() => void load()}>
           刷新
         </Button>
+        </div>
       </header>
 
-      {error ? <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
+      {error ? <div className="rounded-lg border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-700 backdrop-blur-xl">{error}</div> : null}
 
       <section className="grid gap-4 lg:grid-cols-3">
         <StateTile icon={<ServerCog size={22} />} label="服务器" value={project?.server?.host ?? "未配置"} />
@@ -64,9 +81,9 @@ export default function ServerStatusPage({ params }: { params: { id: string } })
       </section>
 
       {project ? (
-        <section className="rounded-lg border border-line bg-white p-5 shadow-soft">
+        <section className="ios-card p-5">
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-base font-bold text-ink">{project.name}</h2>
+            <h2 className="text-base font-black text-slate-950">{project.name}</h2>
             <StatusBadge status={project.status} />
           </div>
           <div className="mt-4 grid gap-3 text-sm text-slate-600 md:grid-cols-2">
@@ -83,10 +100,10 @@ export default function ServerStatusPage({ params }: { params: { id: string } })
 
 function StateTile({ icon, label, value, tone = "neutral" }: { icon: React.ReactNode; label: string; value: string; tone?: "success" | "neutral" }) {
   return (
-    <div className="rounded-lg border border-line bg-white p-5 shadow-soft">
-      <div className={tone === "success" ? "text-mint" : "text-slate-500"}>{icon}</div>
+    <div className="ios-card p-5">
+      <div className={tone === "success" ? "text-[#34c759]" : "text-slate-500"}>{icon}</div>
       <div className="mt-4 text-xs font-semibold uppercase text-slate-400">{label}</div>
-      <div className="mt-2 truncate text-base font-bold text-ink">{value}</div>
+      <div className="mt-2 truncate text-base font-black text-slate-950">{value}</div>
     </div>
   );
 }

@@ -4,6 +4,15 @@
 
 :root {
   color-scheme: light;
+  --app-ink: #111827;
+  --app-muted: #667085;
+  --app-line: rgba(17, 24, 39, 0.1);
+  --app-glass: rgba(255, 255, 255, 0.72);
+  --app-glass-strong: rgba(255, 255, 255, 0.88);
+  --app-blue: #0a84ff;
+  --app-green: #34c759;
+  --app-orange: #ff9f0a;
+  --app-red: #ff3b30;
 }
 
 * {
@@ -13,8 +22,12 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: #f5f7fb;
-  color: #172033;
+  background:
+    linear-gradient(135deg, rgba(10, 132, 255, 0.1), transparent 28%),
+    linear-gradient(225deg, rgba(52, 199, 89, 0.1), transparent 28%),
+    linear-gradient(180deg, #fbfcff 0%, #f4f7fb 44%, #eef4ff 100%);
+  color: var(--app-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", sans-serif;
 }
 
 button,
@@ -25,19 +38,21 @@ select {
 }
 
 ::selection {
-  background: #c7d2fe;
+  background: rgba(10, 132, 255, 0.18);
 }
 
 .log-scrollbar {
-  scrollbar-color: #91a1b8 #111827;
+  scrollbar-color: rgba(10, 132, 255, 0.5) transparent;
 }
 
 .login-stage {
   position: relative;
   background:
-    linear-gradient(rgba(214, 255, 101, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(142, 230, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(135deg, #0c0d0b 0%, #11130d 44%, #0b0d0b 100%);
+    linear-gradient(rgba(255, 255, 255, 0.62) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.62) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(10, 132, 255, 0.16), transparent 30%),
+    linear-gradient(225deg, rgba(255, 149, 0, 0.12), transparent 34%),
+    linear-gradient(180deg, #fbfcff 0%, #f3f7ff 100%);
   background-size: 44px 44px, 44px 44px, 100% 100%;
 }
 
@@ -47,9 +62,9 @@ select {
   pointer-events: none;
   content: "";
   background:
-    linear-gradient(180deg, rgba(245, 245, 240, 0.07), transparent 18%),
-    linear-gradient(90deg, rgba(214, 255, 101, 0.13), transparent 34%, transparent 66%, rgba(142, 230, 255, 0.1));
-  mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.62) 42%, transparent 100%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), transparent 28%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.72), transparent 50%, rgba(10, 132, 255, 0.08));
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.55) 56%, transparent 100%);
 }
 
 .login-stage > * {
@@ -65,12 +80,85 @@ select {
   inset: 0;
   width: 58%;
   content: "";
-  background: linear-gradient(90deg, #d6ff65, #8ee6ff, #f7c873);
+  background: linear-gradient(90deg, #0a84ff, #34c759, #ff9f0a);
   animation: deploy-meter 2.8s ease-in-out infinite;
 }
 
 .login-log-line {
   animation: log-rise 0.42s ease both;
+}
+
+.app-bg {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(10, 132, 255, 0.1), transparent 30%),
+    linear-gradient(225deg, rgba(52, 199, 89, 0.09), transparent 34%),
+    linear-gradient(180deg, #fbfcff 0%, #f3f7ff 100%);
+  background-size: 40px 40px, 40px 40px, 100% 100%;
+}
+
+.liquid-panel {
+  border: 1px solid var(--app-line);
+  background: var(--app-glass);
+  box-shadow: 0 20px 70px rgba(31, 41, 55, 0.08);
+  backdrop-filter: blur(22px) saturate(1.35);
+}
+
+.liquid-panel-strong {
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  background: var(--app-glass-strong);
+  box-shadow: 0 18px 56px rgba(31, 41, 55, 0.08);
+  backdrop-filter: blur(26px) saturate(1.45);
+}
+
+.ios-card {
+  border-radius: 8px;
+  border: 1px solid var(--app-line);
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 16px 44px rgba(31, 41, 55, 0.06);
+  backdrop-filter: blur(18px) saturate(1.25);
+}
+
+.ios-input {
+  height: 44px;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid rgba(17, 24, 39, 0.1);
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0 12px;
+  color: var(--app-ink);
+  outline: none;
+  transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.ios-input:focus {
+  border-color: rgba(10, 132, 255, 0.58);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.12);
+}
+
+.ios-textarea {
+  min-height: 144px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.ios-touch {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.ios-touch:hover {
+  transform: translateY(-1px);
+}
+
+.ios-touch:active {
+  transform: scale(0.985);
+}
+
+.status-pulse {
+  box-shadow: 0 0 0 5px rgba(52, 199, 89, 0.12);
 }
 
 .login-log-line:nth-child(2) {

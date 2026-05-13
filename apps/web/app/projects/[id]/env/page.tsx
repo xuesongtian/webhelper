@@ -1,13 +1,17 @@
 "use client";
 
 import { Plus, Save, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/Button";
-import { apiFetch, type Project } from "@/lib/api";
+import { apiFetch, getToken, type Project } from "@/lib/api";
+import { requireSignedIn } from "@/lib/auth-gate";
+import { demoProject } from "@/lib/demo";
 
 type EnvDraft = { key: string; value: string };
 
 export default function ProjectEnvPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const [project, setProject] = useState<Project | null>(null);
   const [envVars, setEnvVars] = useState<EnvDraft[]>([]);
   const [error, setError] = useState("");
@@ -16,6 +20,12 @@ export default function ProjectEnvPage({ params }: { params: { id: string } }) {
 
   const load = useCallback(async () => {
     setError("");
+    if (!getToken()) {
+      setProject(demoProject);
+      setEnvVars(demoProject.envVars.map((envVar) => ({ key: envVar.key, value: "" })));
+      return;
+    }
+
     try {
       const data = await apiFetch<{ project: Project }>(`/projects/${params.id}`);
       setProject(data.project);
@@ -30,6 +40,10 @@ export default function ProjectEnvPage({ params }: { params: { id: string } }) {
   }, [load]);
 
   async function save() {
+    if (!requireSignedIn(router, `/projects/${params.id}/env`)) {
+      return;
+    }
+
     setError("");
     setSaved("");
     setSaving(true);
@@ -57,11 +71,12 @@ export default function ProjectEnvPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-5">
+      <header className="liquid-panel-strong rounded-lg p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-ink">环境变量设置</h1>
-          <p className="mt-1 text-sm text-slate-500">{project?.name ?? "项目"} 的运行时变量</p>
+          <h1 className="text-3xl font-black tracking-[0] text-slate-950">环境变量设置</h1>
+          <p className="mt-2 text-sm text-slate-500">{project?.name ?? "项目"} 的运行时变量。可以先编辑，保存时再登录。</p>
         </div>
         <div className="flex gap-2">
           <Button type="button" variant="secondary" icon={<Plus size={17} />} onClick={() => setEnvVars((current) => [...current, { key: "", value: "" }])}>
@@ -71,12 +86,13 @@ export default function ProjectEnvPage({ params }: { params: { id: string } }) {
             保存
           </Button>
         </div>
+        </div>
       </header>
 
-      {error ? <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
-      {saved ? <div className="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{saved}</div> : null}
+      {error ? <div className="rounded-lg border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-700 backdrop-blur-xl">{error}</div> : null}
+      {saved ? <div className="rounded-lg border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm text-emerald-700 backdrop-blur-xl">{saved}</div> : null}
 
-      <section className="rounded-lg border border-line bg-white p-5 shadow-soft">
+      <section className="ios-card p-5">
         <div className="space-y-3">
           {envVars.length === 0 ? <div className="text-sm text-slate-500">暂无环境变量</div> : null}
           {envVars.map((envVar, index) => (
@@ -98,4 +114,4 @@ export default function ProjectEnvPage({ params }: { params: { id: string } }) {
   );
 }
 
-const inputClass = "h-11 w-full rounded-md border border-line bg-white px-3 text-sm outline-none transition focus:border-brand";
+const inputClass = "ios-input text-sm";

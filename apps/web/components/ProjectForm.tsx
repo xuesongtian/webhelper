@@ -2,13 +2,15 @@
 
 import { KeyRound, Plus, Rocket, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/Button";
-import { apiFetch, type Project, type ProjectFormPayload, type SshAuthType } from "@/lib/api";
+import { apiFetch, getToken, type Project, type ProjectFormPayload, type SshAuthType } from "@/lib/api";
+import { loginUrl } from "@/lib/auth-gate";
 
 type EnvDraft = { key: string; value: string };
 
 const emptyEnv: EnvDraft = { key: "", value: "" };
+const DRAFT_KEY = "jianzhan-project-draft";
 
 export function ProjectForm() {
   const router = useRouter();
@@ -29,6 +31,35 @@ export function ProjectForm() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  useEffect(() => {
+    const rawDraft = window.sessionStorage.getItem(DRAFT_KEY);
+    if (!rawDraft) {
+      return;
+    }
+
+    try {
+      const draft = JSON.parse(rawDraft) as Partial<typeof form> & { envKeys?: string[] };
+      setForm((current) => ({
+        ...current,
+        name: draft.name ?? current.name,
+        gitRepo: draft.gitRepo ?? current.gitRepo,
+        branch: draft.branch ?? current.branch,
+        domain: draft.domain ?? current.domain,
+        serverIp: draft.serverIp ?? current.serverIp,
+        sshUsername: draft.sshUsername ?? current.sshUsername,
+        sshPort: draft.sshPort ?? current.sshPort,
+        sshAuthType: draft.sshAuthType ?? current.sshAuthType,
+      }));
+      if (draft.envKeys?.length) {
+        setEnvVars(draft.envKeys.map((key) => ({ key, value: "" })));
+      }
+      window.sessionStorage.removeItem(DRAFT_KEY);
+      setError("已恢复登录前填写的基础信息。SSH 密码、私钥和变量值不会临时保存，请重新填写。");
+    } catch {
+      window.sessionStorage.removeItem(DRAFT_KEY);
+    }
+  }, []);
+
   async function submit(createAndDeploy: boolean) {
     setError("");
     setSubmitting(true);
@@ -48,6 +79,25 @@ export function ProjectForm() {
     };
 
     try {
+      if (!getToken()) {
+        window.sessionStorage.setItem(
+          DRAFT_KEY,
+          JSON.stringify({
+            name: form.name,
+            gitRepo: form.gitRepo,
+            branch: form.branch,
+            domain: form.domain,
+            serverIp: form.serverIp,
+            sshUsername: form.sshUsername,
+            sshPort: form.sshPort,
+            sshAuthType: form.sshAuthType,
+            envKeys: envVars.map((item) => item.key.trim()).filter(Boolean),
+          }),
+        );
+        router.push(loginUrl("/projects/new"));
+        return;
+      }
+
       const data = await apiFetch<{ project: Project; webhookSecret: string }>("/projects", {
         method: "POST",
         body: payload,
@@ -60,6 +110,7 @@ export function ProjectForm() {
         });
       }
 
+      window.sessionStorage.removeItem(DRAFT_KEY);
       router.replace(`/projects/${data.project.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "创建项目失败");
@@ -74,16 +125,17 @@ export function ProjectForm() {
 
   return (
     <form
-      className="space-y-6"
+      className="space-y-5"
       onSubmit={(event) => {
         event.preventDefault();
         void submit(false);
       }}
     >
-      {error ? <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
+      {error ? <div className="rounded-lg border border-blue-200 bg-blue-50/80 px-4 py-3 text-sm text-blue-800 backdrop-blur-xl">{error}</div> : null}
 
-      <section className="rounded-lg border border-line bg-white p-5 shadow-soft">
-        <h2 className="text-base font-bold text-ink">项目</h2>
+      <section className="ios-card p-5">
+        <h2 className="text-base font-black text-slate-950">项目</h2>
+        <p className="mt-1 text-sm text-slate-500">先把站点资料填好，真正提交创建时再进入登录。</p>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <Field label="项目名称">
             <input className={inputClass} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required />
@@ -100,8 +152,8 @@ export function ProjectForm() {
         </div>
       </section>
 
-      <section className="rounded-lg border border-line bg-white p-5 shadow-soft">
-        <h2 className="text-base font-bold text-ink">服务器连接</h2>
+      <section className="ios-card p-5">
+        <h2 className="text-base font-black text-slate-950">服务器连接</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <Field label="云服务器 IP">
             <input className={inputClass} value={form.serverIp} onChange={(event) => setForm({ ...form, serverIp: event.target.value })} required />
@@ -132,7 +184,7 @@ export function ProjectForm() {
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             <Field label="SSH 私钥">
               <textarea
-                className={`${inputClass} h-36 resize-y py-3 font-mono text-xs`}
+                className={`${inputClass} ios-textarea resize-y font-mono text-xs`}
                 value={form.sshPrivateKey}
                 onChange={(event) => setForm({ ...form, sshPrivateKey: event.target.value })}
                 placeholder="-----BEGIN OPENSSH PRIVATE KEY-----"
@@ -162,9 +214,9 @@ export function ProjectForm() {
         )}
       </section>
 
-      <section className="rounded-lg border border-line bg-white p-5 shadow-soft">
+      <section className="ios-card p-5">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-base font-bold text-ink">环境变量</h2>
+          <h2 className="text-base font-black text-slate-950">环境变量</h2>
           <Button type="button" variant="secondary" icon={<Plus size={16} />} onClick={() => setEnvVars((current) => [...current, { ...emptyEnv }])}>
             添加
           </Button>
@@ -195,9 +247,9 @@ export function ProjectForm() {
         </Button>
       </div>
 
-      <p className="flex items-center gap-2 text-xs text-slate-500">
+      <p className="flex items-center gap-2 rounded-lg border border-white/70 bg-white/60 px-3 py-2 text-xs text-slate-500 backdrop-blur-xl">
         <KeyRound size={14} />
-        密钥和环境变量会加密保存，一次性密码只随本次部署请求发送。
+        密钥和环境变量只在登录后提交；未登录时不会把 SSH 密码、私钥、变量值临时保存。
       </p>
     </form>
   );
@@ -206,10 +258,10 @@ export function ProjectForm() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="text-sm font-medium text-slate-700">{label}</span>
-      <div className="mt-1">{children}</div>
+      <span className="text-sm font-semibold text-slate-700">{label}</span>
+      <div className="mt-2">{children}</div>
     </label>
   );
 }
 
-const inputClass = "h-11 w-full rounded-md border border-line bg-white px-3 text-sm outline-none transition focus:border-brand";
+const inputClass = "ios-input text-sm";

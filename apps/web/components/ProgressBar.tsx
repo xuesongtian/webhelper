@@ -11,15 +11,15 @@ const progressByStatus: Record<ProjectStatus, number> = {
 
 export function ProgressBar({ status }: { status: ProjectStatus }) {
   return (
-    <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
+    <div className="h-2 w-full overflow-hidden rounded-full bg-white/70 shadow-inner">
       <div
         className={clsx(
-          "h-full rounded-full transition-all",
-          status === "FAILED" && "bg-danger",
-          status === "RUNNING" && "bg-mint",
-          status === "BUILDING" && "bg-brand",
-          status === "STOPPED" && "bg-amber",
-          status === "UNDEPLOYED" && "bg-slate-400",
+          "h-full rounded-full transition-all duration-500",
+          status === "FAILED" && "bg-[#ff3b30]",
+          status === "RUNNING" && "bg-[#34c759]",
+          status === "BUILDING" && "bg-[#0a84ff]",
+          status === "STOPPED" && "bg-[#ff9f0a]",
+          status === "UNDEPLOYED" && "bg-slate-300",
         )}
         style={{ width: `${progressByStatus[status]}%` }}
       />
