@@ -93,6 +93,8 @@ const messageCreateSchema = z.object({
   contact: z.string().trim().max(120).default(""),
 });
 
+const SITE_VISIT_COUNTER_ID = "global";
+
 app.get("/health", (_req, res) => {
   res.json({ ok: true, service: "jianzhan-assistant-api" });
 });
@@ -179,6 +181,30 @@ app.post(
     });
 
     res.status(201).json({ message: toPublicMessage(message) });
+  }),
+);
+
+app.get(
+  "/visits",
+  asyncHandler(async (_req, res) => {
+    const counter = await prisma.siteVisitCounter.findUnique({
+      where: { id: SITE_VISIT_COUNTER_ID },
+    });
+
+    res.json({ count: counter?.count ?? 0 });
+  }),
+);
+
+app.post(
+  "/visits",
+  asyncHandler(async (_req, res) => {
+    const counter = await prisma.siteVisitCounter.upsert({
+      where: { id: SITE_VISIT_COUNTER_ID },
+      create: { id: SITE_VISIT_COUNTER_ID, count: 1 },
+      update: { count: { increment: 1 } },
+    });
+
+    res.json({ count: counter.count });
   }),
 );
 

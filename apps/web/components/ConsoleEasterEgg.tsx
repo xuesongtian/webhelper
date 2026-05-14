@@ -1,23 +1,63 @@
 "use client";
 
 import { useEffect } from "react";
+import { apiBaseUrl } from "@/lib/api";
 
-const OPEN_COUNT_KEY = "jianzhan-assistant-open-count";
+const VISIT_RECORDED_KEY = "jianzhan-assistant-site-visit-recorded";
 
 export function ConsoleEasterEgg() {
   useEffect(() => {
-    const currentCount = Number(window.localStorage.getItem(OPEN_COUNT_KEY) ?? "0");
-    const nextCount = Number.isFinite(currentCount) ? currentCount + 1 : 1;
-    window.localStorage.setItem(OPEN_COUNT_KEY, String(nextCount));
-    window.dispatchEvent(new CustomEvent("jianzhan:open-count", { detail: { count: nextCount } }));
+    let cancelled = false;
 
-    console.log(
-      "%c建站助手 · 隐藏控制台",
-      "border-radius:8px;background:#409eff;color:#fff;font-size:16px;font-weight:800;padding:8px 12px;",
-    );
-    console.log("%c你已经打开这个网站 %d 次。", "color:#67c23a;font-weight:700;", nextCount);
-    console.log("%c留言箱已启动：联系方式会加密保存，不会公开展示。", "color:#9b6cff;font-weight:700;");
+    async function loadVisitCount() {
+      const shouldRecordVisit = window.sessionStorage.getItem(VISIT_RECORDED_KEY) !== "true";
+      if (shouldRecordVisit) {
+        window.sessionStorage.setItem(VISIT_RECORDED_KEY, "true");
+      }
+
+      const response = await fetch(`${apiBaseUrl()}/visits`, {
+        method: shouldRecordVisit ? "POST" : "GET",
+        headers: shouldRecordVisit ? { "Content-Type": "application/json" } : undefined,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Visit counter failed with ${response.status}`);
+      }
+
+      const data = (await response.json()) as { count?: number };
+      const count = Number(data.count);
+
+      if (!cancelled && Number.isFinite(count)) {
+        window.dispatchEvent(new CustomEvent("jianzhan:visit-count", { detail: { count, scope: "global" } }));
+        printConsoleMessage(count);
+      }
+    }
+
+    void loadVisitCount().catch(() => {
+      if (!cancelled) {
+        printConsoleMessage();
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return null;
+}
+
+function printConsoleMessage(count?: number) {
+  console.log(
+    "%c建站助手 · 隐藏控制台",
+    "border-radius:8px;background:#409eff;color:#fff;font-size:16px;font-weight:800;padding:8px 12px;",
+  );
+  console.log(
+    "%c%s",
+    "color:#67c23a;font-weight:700;",
+    typeof count === "number"
+      ? `累计有 ${new Intl.NumberFormat("zh-CN").format(count)} 人访问，赶快构建属于你的自动网站吧。`
+      : "累计访问人数正在连接中，赶快构建属于你的自动网站吧。",
+  );
+  console.log("%c留言箱已启动：联系方式会加密保存，不会公开展示。", "color:#9b6cff;font-weight:700;");
 }

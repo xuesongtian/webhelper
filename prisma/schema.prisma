@@ -153,3 +153,12 @@ model GuestMessage {
   @@index([createdAt])
   @@map("guest_messages")
 }
+
+model SiteVisitCounter {
+  id        String   @id
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("site_visit_counters")
+}
